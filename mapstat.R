@@ -10,7 +10,8 @@ setwd(wd)
 print(paste('Running flagstat for',args[2],sep=" "))
 system(command = paste0('/package/samtools-1.1/samtools flagstat ',args[1],' > flagstat_',args[1],'.out'),wait = TRUE)
 print('Plotting results')
-map.tot = as.data.frame(read.table(pipe("cut -f1 -d ' ' 'flagstat.out'")))
+map.tot = as.data.frame(read.table(pipe(paste0("cut -f1 -d ' ' ",'flagstat_',args[1],'.out'))))
+
 #map.filt = read.table(pipe("cut -f1 -d ' ' '/data/akhtar/bhardwaj/2015_Ibu_ChIP-exo/mySeqTest_MSL1/HISAT_mapping/flagstat_msl1-filtered.txt'"))
 #map.tot = cbind(map.unfil,map.filt)
 colnames(map.tot) = args[2]
