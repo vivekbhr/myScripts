@@ -24,7 +24,7 @@ then
 	echo "Removing blacklisted and random regions"
 	for num in $(seq 1 ${totalfiles})
 	do
-	/package/samtools-1.1/samtools view -h ${infolder}/${filename[@]:${num}:1} | python /data/akhtar/bhardwaj/Gitrepo/MultipurposeScripts_pipelines/samFilter_v3.py --filter_out_from_BED /data/projects/misc/annotations/blacklist_ENCODE/mm9-blacklist.bed --random --lowqual > ${outfolder}/${filename[@]:${num}:1}_blaclist_random_removed.sam
+	/package/samtools-1.1/samtools view -h ${infolder}/${filename[@]:${num}:1} | python /data/akhtar/bhardwaj/Gitrepo/MultipurposeScripts_pipelines/samFilter_v3.py --filter_out_from_BED  /data/manke/repository/misc/annotations/blacklist_ENCODE/mm9-blacklist.bed --random --lowqual > ${outfolder}/${filename[@]:${num}:1}_blaclist_random_removed.sam
 	/package/samtools-1.1/samtools view -Sb ${outfolder}/${filename[@]:${num}:1}_blaclist_random_removed.sam -o ${outfolder}/${filename[@]:${num}:1}_blaclist_random_removed.bam
 	done
 
@@ -41,7 +41,7 @@ else
 	echo "Removing blacklisted and random regions" # exact copy of the script in first loop
 	for num in $(seq 1 ${totalfiles})
 	do
-	/package/samtools-1.1/samtools view -h ${infolder}/${filename[@]:${num}:1} | python /data/akhtar/bhardwaj/Gitrepo/MultipurposeScripts_pipelines/samFilter_v3.py --filter_out_from_BED /data/projects/misc/annotations/blacklist_ENCODE/mm9-blacklist.bed --random --lowqual > ${outfolder}/${filename[@]:${num}:1}_blaclist_random_removed.sam
+	/package/samtools-1.1/samtools view -h ${infolder}/${filename[@]:${num}:1} | python /data/akhtar/bhardwaj/Gitrepo/MultipurposeScripts_pipelines/samFilter_v3.py --filter_out_from_BED  /data/manke/repository/misc/annotations/blacklist_ENCODE/mm9-blacklist.bed --random --lowqual > ${outfolder}/${filename[@]:${num}:1}_blaclist_random_removed.sam
 	/package/samtools-1.1/samtools view -Sb ${outfolder}/${filename[@]:${num}:1}_blaclist_random_removed.sam -o ${outfolder}/${filename[@]:${num}:1}_blaclist_random_removed.bam
 	done
 
