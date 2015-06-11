@@ -68,7 +68,7 @@ def main():
     p.add_argument('--mismatch', action="store_true",
                  help = "if set, all reads with at least one mismatch are removed")
     p.add_argument('--lowqual', action="store_true",
-                 help="if set, all low quality reads (mapping quality less than Q20) are removed")
+                 help="if set, all low quality reads (mapping quality less than Q30) are removed")
     p.add_argument('--rmseq', action="store_true", 
                  help="if set, query sequences and qualities (col 10, 11) are removed to reduce file size")
 	
