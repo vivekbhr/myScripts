@@ -21,7 +21,7 @@ makeVoomInput <- function(counts,design,bmGeneNames,name="name"){
   y <- voom(counts,design)
   y$Gene = tolower(as.character(matchingIds$external_gene_id))
   fit <- lmFit(y, design = design)
-  fit <- ebayes(fit)
+  fit <- eBayes(fit)
   voomInput <- list(y = y, fit = fit)
   
   # make plots of filtering
@@ -99,3 +99,47 @@ plotBarCodes <- function(GSEfile,ourVoomFile,batchAnalyse=TRUE,isHuman=FALSE,nam
         dev.off()
       }
   }  
+
+
+
+runCamera <- function(counts,design,bmGeneNames,name="name",moduleFile="msigdb.v5.0.symbols.gmt"){
+        design <- read.table(design, header=T)
+        design <- model.matrix(~ condition, design)
+        counts <- read.table(counts, header = T)
+        rownames(counts) = gsub('(ENS.*)\\.[0-9]*','\\1',rownames(counts))
+        means = rowMeans(counts)
+        counts = counts[which(means > 1),]
+        bmGeneNames = read.table(bmGeneNames,sep="\t", header=TRUE, row.names=1)
+        matchingIds = merge(counts, bmGeneNames,
+                            by.x = 0,
+                            by.y = "ensembl_gene_id",
+                            all.x = TRUE)
+        matchingIds = matchingIds[c("Row.names","external_gene_id")]
+        y <- voom(counts,design)
+        y$Gene = tolower(as.character(matchingIds$external_gene_id))
+        fit <- lmFit(y, design = design)
+        fit$df.residual <- fit$df.residual - 1 # for CAMERA
+        fit <- eBayes(fit,trend = T) # for CAMERA
+        fit$gene = tolower(as.character(matchingIds$external_gene_id))
+        print(summary(decideTests(fit)))
+        # read and prepare ModuleFile
+        Mods <- read.table(moduleFile,fill = TRUE, sep="\t")
+        Mods <- Mods[,c(1,3:length(Mods))]
+        nams <- Mods[,1]
+        dat <- Mods[,-1]
+        ldat <- split(dat,seq_len(nrow(dat)))
+        ldat <- lapply(ldat,function(x) x[x != ""])
+        names(ldat) <- nams
+        ldat <- lapply(ldat,tolower)
+        index <- symbols2indices(ldat,fit$gene,remove.empty = TRUE)
+        # Run CAMERA
+        gst<-camera(index = index,y = y$E,design = design,allow.neg.cor=FALSE)
+        gst<-gst[order(gst[,5],decreasing = FALSE),]
+        
+        print("No of Significant modules : ")
+        print(table(gst[,5]<0.05))
+        print("List of significant modules : ")
+        print(gst[which(gst$FDR < 0.05),])
+        
+        return(gst)
+}
