@@ -1,9 +1,10 @@
-library(limma)
-library(gplots)
 
-# Author: Vivek (11/06/2015)
 # The script can be used to compare a count dataset to online microarrary datasets, 
 # with columns "gname/SPOTID" (for gene name) & "adj.P.Val". 
+# Author: Vivek Bhardwaj (bhardwaj@ie-freiburg.mpg.de) (11/06/2015)
+
+library(limma)
+library(gplots)
 
 makeVoomInput <- function(counts,design,bmGeneNames,name="name"){
   design <- read.table(design, header=T)
