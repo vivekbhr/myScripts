@@ -4,8 +4,7 @@
 library(reshape)
 library(ggplot2)
 library(plyr)
-library(dplyr)
-library(magrittr) # let's use some chaining
+library(dplyr) # let's use some chaining
 library(UpSetR) # supecool set plots
 
 library('vsn')
