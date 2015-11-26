@@ -17,11 +17,17 @@ echo -e "rDNA.reads" >> rDNA_reads.txt
 for file in $(ls | grep .bam$)
 do
 echo ${file} >> Filename.txt
-/package/samtools/bin/samtools view -c ${file} >> total_alignments.txt
-/package/samtools/bin/samtools view -cF260 ${file} >> primary_alignments.txt
-/package/samtools/bin/samtools view -cF260 ${file} rDNA >> Primary_rDNA_alignments.txt
-/package/samtools/bin/samtools view -bF260 ${file} | samtools bam2fq - | grep "/1" | wc -l >> Total_reads.txt
-/package/samtools/bin/samtools view -bF260 ${file} rDNA | samtools bam2fq - | grep "/1" | wc -l >> rDNA_reads.txt
+samtools view -c ${file} >> total_alignments.txt
+samtools view -cF260 ${file} >> primary_alignments.txt
+samtools view -cF260 ${file} rDNA >> Primary_rDNA_alignments.txt
+## Now count reads
+samtools bam2fq ${file} | grep "/1" | wc -l >> Total_reads.txt
+samtools view -bF4 ${file} | samtools bam2fq - | grep "/1" | wc -l >> Mapped_reads.txt
+samtools view -bF260 ${file} | samtools bam2fq - | grep "/1" | wc -l >> Primary-Mapped_reads.txt
+
+samtools view ${file} | grep "NH:i:[0-9]" | samtools bam2fq - | grep "/1" | wc -l >> Multi-Mapped_reads.txt
+samtools view -bF260 ${file} | samtools bam2fq - | grep "/1" | wc -l >> Primary_Multi-Mapped_reads.txt
+samtools view -bF260 ${file} rDNA | samtools bam2fq - | grep "/1" | wc -l >> rDNA_reads.txt
 done
 
 # paste results and remove other files
