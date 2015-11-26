@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
 # author: Fidel Ramirez, Sarah Diehl
 # date: 9.11.2013
 
