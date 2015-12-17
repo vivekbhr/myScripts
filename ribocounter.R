@@ -15,9 +15,11 @@ ribocounts.n <- data.frame(Filename = ribocounts$Filename,
                            perc.primary.rDNA = ribocounts$Primary.rDNA.alignments/ribocounts$Total.alignments
 )
 ribocounts.num <- data.frame(Filename = ribocounts$Filename,
-                             Total.reads = 100,
-                             Total.aligned.reads = ribocounts$Total.reads/1000000 * 100,
-                             rDNA.aligned.reads = ribocounts$rDNA.reads/1000000 * 100
+                             Total.reads = ribocounts$Total.reads/ribocounts$Total.reads * 100,
+                             Total.aligned.reads = ribocounts$Mapped.reads/ribocounts$Total.reads * 100,
+                             Primary.aligned.reads = ribocounts$Primary.Mapped.reads/ribocounts$Total.reads * 100,
+                             rDNA.aligned.reads = ribocounts$rDNA.reads/1000000 * 100,
+                             rDNA.aligned.primary.reads = ribocounts$rDNA.reads.primary/1000000 * 100
 )
 ## plot out
 pdf("ribocont_results.pdf")
