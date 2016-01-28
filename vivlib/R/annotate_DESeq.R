@@ -23,10 +23,10 @@ annotate_DESeqOutput <- function(DESeqOutput, Output, remote = TRUE, genome = "h
                                               "dmelanogaster_gene_ensembl"),
                                      stringsAsFactors = FALSE)
 
-                ifelse(!(genome %in% genomes$id), exit("Genome not in list!"),
-                       message("fetching annotation") )
+                assertthat::assert_that(genome %in% genomes$id)
+                message("fetching annotation")
                 tofetch <- dplyr::filter(genomes,id == genome)$path
-                ensembl = biomaRt::useMart(tofetch,mart=ensembl)
+                ensembl = biomaRt::useMart("ensembl",tofetch)
                 ext.data <- biomaRt::getBM(attributes = c("ensembl_gene_id","external_gene_name","description"),
                                 mart = ensembl)
                 outfile <- merge(ext.data,seqout,by.x = 1,by.y = 0)
