@@ -46,7 +46,8 @@ DESeq_wrapper <- function(fcountOutput,numReplicates = 4, fdr = 0.01, Output = "
         DESeq2::plotSparsity(dds)
         DESeq2::plotDispEsts(dds)
         DESeq2::plotPCA(rld)
-        pheatmap::pheatmap(assay(rld)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+        pheatmap::pheatmap(SummarizedExperiment::assay(rld)[select,],
+                           cluster_rows=FALSE, show_rownames=FALSE,
                            cluster_cols=FALSE,main = "Heatmap : Top 20 expressed genes")
         DESeq2::plotMA(ddr)
         print(ggplot2::ggplot(df.plot,ggplot2::aes(Status,Genes,fill=Status)) +
