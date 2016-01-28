@@ -26,7 +26,8 @@ DESeq_wrapper <- function(fcountOutput,numReplicates = 4, fdr = 0.01, Output = "
         # DESeq
         samples <- data.frame(row.names = colnames(input),
                               condition = rep(c("Cnt","KD"),each = numReplicates))
-        dds <- DESeq2::DESeqDataSetFromMatrix(countData = input, colData = samples, design = ~condition)
+        dds <- DESeq2::DESeqDataSetFromMatrix(countData = input,
+                                              colData = samples, design = ~condition)
         dds <- DESeq2::DESeq(dds)
         ddr <- DESeq2::results(dds,alpha = fdr)
         ddr.df <- as.data.frame(ddr)
@@ -38,7 +39,7 @@ DESeq_wrapper <- function(fcountOutput,numReplicates = 4, fdr = 0.01, Output = "
         )
         # Write output
         rld <- DESeq2::rlog(dds)
-        select <- order(rowMeans(counts(dds,normalized=TRUE)),decreasing=TRUE)[1:20]
+        select <- order(rowMeans(DESeq2::counts(dds,normalized=TRUE)),decreasing=TRUE)[1:20]
 
         message("writing results")
         pdf(pdfReport)
