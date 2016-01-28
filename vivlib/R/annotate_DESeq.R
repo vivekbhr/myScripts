@@ -29,13 +29,13 @@ annotate_DESeqOutput <- function(DESeqOutput, Output, remote = TRUE, genome = "h
                 ensembl = biomaRt::useMart("ensembl",tofetch)
                 ext.data <- biomaRt::getBM(attributes = c("ensembl_gene_id","external_gene_name","description"),
                                 mart = ensembl)
-                outfile <- merge(ext.data,seqout,by.x = 1,by.y = 0)
-                write.table(outfile,Output,sep="\t",quote=FALSE)
+                outfile <- merge(seqout,ext.data,by.x = 0,by.y = 1)
+                write.table(outfile,Output,sep="\t", row.names = FALSE,quote=FALSE)
 
         } else {
                 assertthat::assert_that(assertthat::is.readable(map_file))
                 bed <- read.delim(map_file,header = TRUE)
-                outfile <- merge(bed,seqout,by.x = 1,by.y = 0)
-                write.table(outfile,Output,sep="\t",quote=FALSE)
+                outfile <- merge(seqout,bed,by.x = 0,by.y = 1)
+                write.table(outfile,Output,sep="\t", row.names = FALSE,quote=FALSE)
         }
 }
