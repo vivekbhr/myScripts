@@ -4,10 +4,10 @@
 \alias{spia_wrapper}
 \title{A wrapper over SPIA pathway analysis for mouse and human}
 \usage{
-spia_wrapper(df, organism = "mmu", padjCutoff, outFile, outPlot)
+spia_wrapper(DESeqOut, organism = "mmu", padjCutoff, outFile, outPlot)
 }
 \arguments{
-\item{df}{a data frame of DESeq2 output}
+\item{DESeqOut}{Tab-seperated DESeq2 output}
 
 \item{organism}{select from "mmu" (mouse) or "hsa" (human)}
 
