@@ -14,10 +14,10 @@
 
 
 GEO=${1}
-echo "expecting esearch installed in ~/programs"
+echo "expecting esearch installed in /hpc/hub_oudenaarden/vbhardwaj/programs"
 echo "expecting parallel fastq-dump under module files"
 
-export export PATH=~/programs/edirect/:$PATH 
+export export PATH=/hpc/hub_oudenaarden/vbhardwaj/programs/edirect/:$PATH 
 # get SRA from geo
 SRA=$(esearch -db gds -query "${GEO}" | efetch -format docsum | xtract -pattern ExtRelation -element RelationType,TargetObject | cut -f2 | grep SRP)
 
@@ -28,7 +28,7 @@ esearch -db sra -query $SRA | \
   tr '\t' '\n' > ${SRA}.txt
 
 # use Experiment@name Run@acc : for experiment name as well
-module load parallel-fastq-dump
+# module load parallel-fastq-dump
 # get fastq from SRRs
 while read -r LINE; do
     parallel-fastq-dump -t 10 --split-3 --gzip -s "$LINE" &
