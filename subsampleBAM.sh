@@ -7,7 +7,7 @@ FACTOR=$(samtools idxstats $1 | cut -f3 | awk -v COUNT=$2 'BEGIN {total=0} {tota
 
 if [[ $FACTOR > 1 ]]
   then
-  echo '[ERROR]: Requested number of reads exceeds total read count in' $1 '-- exiting' && exit 1
+  echo '[ERROR]: Requested number of reads exceeds total read count in' $1
 fi
 
 sambamba view -s $FACTOR -t 2 -f bam -l 5 $1
