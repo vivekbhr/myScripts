@@ -23,7 +23,7 @@ QUEUE = "cpu" # -p
 EMAIL_TYPE = "ALL" # --mail-type=...
 WORKING_DIR = os.getcwd() # -D
 NAME = os.getlogin() # -J
-MEM = "5781" # --mem-per-cpu=... 3541 5781
+MEM = "1G" # --mem-per-cpu=... 3541 5781
 CMD_TO_LOG = False
 QUEUES = ['cpu', 'gpu']
 ENV_STRING = "export LC_ALL=en_US.UTF-8; export LANG=en_US.UTF-8; export LANGUAGE=en_US.UTF-8;"
