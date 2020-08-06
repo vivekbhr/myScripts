@@ -19,6 +19,7 @@ import sys
 now = datetime.datetime.now()
 
 NTHREADS = 6 # -c or -S?
+TIME = '12:00:00'
 QUEUE = "cpu" # -p
 EMAIL_TYPE = "ALL" # --mail-type=...
 WORKING_DIR = os.getcwd() # -D
@@ -27,7 +28,7 @@ MEM = "1G" # --mem-per-cpu=... 3541 5781
 CMD_TO_LOG = False
 QUEUES = ['cpu', 'gpu']
 ENV_STRING = "export LC_ALL=en_US.UTF-8; export LANG=en_US.UTF-8; export LANGUAGE=en_US.UTF-8;"
-MAINTEMP = "/hpc/hub_oudenaarden/vbhardwaj/temp"
+MAINTEMP = "/hpc/hub_oudenaarden/vbhardwaj/tempdir"
 
 # Could set a custom stdout and stderr with -o and -e
 
@@ -36,6 +37,7 @@ def parse_args():
 
     #These are optional and most have defaults
     parser.add_argument("-t", "--threads", dest="threads", metavar="INT", help="maximum number of threads (default: '{}')".format(NTHREADS), type=int, default=NTHREADS)
+    parser.add_argument("-tm", "--time", dest="time", metavar="runtime", help="maximum time needed for the job (default: '{}')".format(TIME), type=str, default=TIME)
     parser.add_argument("-l", "--log", dest="log_dir", metavar="logdir", help="directory for writing stdout and stderr log files (default: '{}')".format(WORKING_DIR), type=str, default=WORKING_DIR)
     parser.add_argument("--no_log", dest="no_log", action="store_true", default=False, help="Do not write log files.")
     parser.add_argument("-D", "--working_dir", dest="working_dir", metavar="workingdir", help="The working directory, in case you're not already in it and your commands use relative paths (default: '{}')".format(WORKING_DIR), type=str, default=WORKING_DIR)
@@ -104,6 +106,8 @@ def main():
 
     # -q
     script.append("#SBATCH -p {}".format(args.partition))
+    # time
+    script.append("#SBATCH --time {}".format(args.time))
 
     # -l
     if args.no_log:
