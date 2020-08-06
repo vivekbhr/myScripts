@@ -31,6 +31,13 @@ def parse_args(defaults=None):
                           help="TSV file with barcodes '\\t' cluster_name",
                           type=str,
                           required=True)
+    parser.add_argument("-t",
+                          dest="barcodeTag",
+                          metavar="STR",
+                          help="tag for barcodes in the BAM file",
+                          type=str,
+                          default="BC",
+                          required=True)
 
     parser.add_argument("-o",
                           dest="outprefix",
@@ -51,6 +58,7 @@ def main():
     # get command line arguments
     parser = parse_args()
     args = parser.parse_args()
+    tag = args.barcodeTag
 
     cluster_dict = {}
     with open(args.clusters_tsv) as csv_file:
@@ -73,7 +81,7 @@ def main():
 
     for read in fin:
         tags = read.tags
-        CB_list = [ x for x in tags if x[0] == "BC"]
+        CB_list = [ x for x in tags if x[0] == tag]
         if CB_list:
             cell_barcode = CB_list[0][1]
         # the bam files may contain reads not in the final clustered barcodes
