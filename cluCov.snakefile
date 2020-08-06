@@ -1,10 +1,16 @@
-infolder = "../dedup_bam"
-samples = ['Bl6-BM-K36me3-CTCF05-i1', 'Bl6-BM-K36me3-CTCF05-i2']
-clusters_tsv = ['Bl6-BM-K36me3-CTCF05-i1.txt', 'Bl6-BM-K36me3-CTCF05-i2.txt']
-splitbam_path = '~/programs/myScripts/splitBam.py'
 import csv
 import os
+infolder = config['bamfolder']
+samples = config['samples']
+clusters_tsv = config['clusters']
+splitbam_path = config['splitbam']
+bctag = config['barcodetag']
+deeptoolsArgs = config['deeptoolsArgs']
+clusterRegex = config['clusterRegex']
+# -bl {params.blacklist} -ignore X Y M "
+# "--effectiveGenomeSize 2652783500 "
 
+print(config)
 def getClusters(tsv):
     cluster_dict = {}
     with open(tsv) as csv_file:
@@ -31,20 +37,21 @@ rule splitBAM:
     output:
         bams = temp(expand("clusters_split/{{sample}}_{cluster}.bam", cluster = clusters))
     wildcard_constraints:
-        cluster="\d"
+        cluster=clusterRegex
     params:
         outdir = "clusters_split/{sample}_",
-        splitbam = splitbam_path
+        splitbam = splitbam_path,
+        bctag = bctag
     threads: 1
     shell:
-        "{params.splitbam} -i {input.bam} -c {input.clusters} -o {params.outdir}"
+        "{params.splitbam} -i {input.bam} -t {params.bctag} -c {input.clusters} -o {params.outdir}"
 
 ## index bam
 rule index:
     input: "clusters_split/{sample}_{cluster}.bam"
     output: temp("clusters_split/{sample}_{cluster}.bam.bai")
     wildcard_constraints:
-        cluster="\d"
+        cluster=clusterRegex
     threads: 1
     shell:
         "samtools index {input}"
@@ -56,14 +63,13 @@ rule bamcov:
         bai = "clusters_split/{sample}_{cluster}.bam.bai"
     output: "clusters_split/{sample}_{cluster}.bw"
     wildcard_constraints:
-        cluster="\d"
+        cluster=clusterRegex
     params:
-        blacklist = "/hpc/hub_oudenaarden/vbhardwaj/annotations/blacklists/mm10-blacklist.v2.bed"
+        args = deeptoolsArgs
     threads: 20
     shell:
-        "bamCoverage -p {threads} --skipNAs -bl {params.blacklist} -ignore X Y M "
-        "--effectiveGenomeSize 2652783500 "
-        "-b {input.bam} -o {output}"
+        "bamCoverage -p {threads} --skipNAs "
+        "{params.args} -b {input.bam} -o {output}"
 
 ## optionally, merge bw across samples
 rule mergeBam:
@@ -71,7 +77,7 @@ rule mergeBam:
          expand("clusters_split/{sample}_{{cl}}.bam", sample = samples)
     output: "clusters_split/{cl}_merged.bam"
     wildcard_constraints:
-        cl="\d"
+        cl=clusterRegex
     threads: 10
     shell:
         "samtools merge -@ {threads} {output} {input}"
@@ -80,7 +86,7 @@ rule idx_mergeBam:
     input: "clusters_split/{cl}_merged.bam"
     output: "clusters_split/{cl}_merged.bam.bai"
     wildcard_constraints:
-        cl="\d"
+        cl=clusterRegex
     threads: 1
     shell:
         "samtools index {input}"
@@ -91,13 +97,11 @@ rule bamcov_mergeBam:
         bai = "clusters_split/{cl}_merged.bam.bai"
     output: "clusters_split/{cl}_merged.bw"
     wildcard_constraints:
-        cl="\d"
+        cl=clusterRegex
     params:
-        blacklist = "/hpc/hub_oudenaarden/vbhardwaj/annotations/blacklists/mm10-blacklist.v2.bed"
+        args = deeptoolsArgs
     threads: 20
     log: "{cl}_bamCoverage.log"
     shell:
-        "bamCoverage -p {threads} --skipNAs -bl {params.blacklist} -ignore X Y M "
-        "--effectiveGenomeSize 2652783500 "
-        "--normalizeUsing RPGC "
-        "-b {input.bam} -o {output} > {log} 2>&1"
+        "bamCoverage -p {threads} --skipNAs "
+        "{params.args} -b {input.bam} -o {output} > {log} 2>&1"
