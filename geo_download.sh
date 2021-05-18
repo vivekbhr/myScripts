@@ -1,23 +1,16 @@
 #!/usr/bin/env bash
-# geo_download.sh
+# geo_download.sh <GSE_ID>
 #
 # Example
 # -------
 # To download all of the read archive files for GEO12001:
 #   geo_download GEO012001
-#
-# For 'esearch', 'efetch', 'xtract', you must install Entrez Direct:
-#   http://www.ncbi.nlm.nih.gov/books/NBK179288/
-#
-# For 'fastq-dump', you must install SRA Tools:
-#   https://github.com/ncbi/sra-tools
 
 
 GEO=${1}
-echo "expecting esearch installed in /hpc/hub_oudenaarden/vbhardwaj/programs"
-echo "expecting parallel fastq-dump under module files"
+echo "expecting esearch and parallel-fastq-dump installed"
+echo "if not, install via conda install -c bioconda parallel-fastq-dump entrez-direct"
 
-export export PATH=/hpc/hub_oudenaarden/vbhardwaj/programs/edirect/:$PATH 
 # get SRA from geo
 SRA=$(esearch -db gds -query "${GEO}" | efetch -format docsum | xtract -pattern ExtRelation -element RelationType,TargetObject | cut -f2 | grep SRP)
 
