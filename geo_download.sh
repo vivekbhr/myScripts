@@ -24,5 +24,6 @@ esearch -db sra -query $SRA | \
 # module load parallel-fastq-dump
 # get fastq from SRRs
 while read -r LINE; do
-    parallel-fastq-dump -t 10 --split-3 --gzip -s "$LINE" &
+     echo $LINE
+    parallel-fastq-dump -t 10 --split-3 --gzip -s "$LINE";
 done < ${SRA}.txt
