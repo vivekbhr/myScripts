@@ -5,18 +5,21 @@ SLURM=/hpc/hub_oudenaarden/vbhardwaj/programs/myScripts/SlurmEasy
 THREADS=20
 # get SRA from geo
 GEO=$1
-#SRA=$(esearch -db gds -query "${GEO}" | efetch -format docsum | xtract -pattern ExtRelation -element RelationType,TargetObject | cut -f2 | grep SRP)
-
+SRA=$(esearch -db gds -query "${GEO}" | efetch -format docsum | xtract -pattern ExtRelation -element RelationType,TargetObject | cut -f2 | grep "SRP\|SRX")
 echo 'Fetched SRP ID: ' ${SRA}
 
 # getsampleInfo
-#esearch -db sra -query $SRA | \
-#efetch -format docsum | \
-#xtract -pattern DocumentSummary -element Title Run@acc | \
-#tr ' ' '_' | tr ':_' '_' | tr '; ' '_' > samples.txt
+echo 'Dumping sample info to samples.txt..'
+touch samples.txt
+for f in $SRA;
+do esearch -db sra -query $f | \
+    efetch -format docsum | \
+    xtract -pattern DocumentSummary -element Title Run@acc | \
+    tr ' ' '_' | tr ':_' '_' | tr '; ' '_' | sed 's/__/_/g' | tr -d '(|)' >> samples.txt
+done
 
 # make one directory per sample and dump the SRA IDs in it
-echo 'Creating directories..'
+echo 'Creating directories and dumping fastq..'
 
 while read LINE ;
 do dir=$(echo $LINE | awk '{print $1}');
