@@ -24,15 +24,15 @@ echo 'Creating directories and dumping fastq..'
 while read LINE ;
 do dir=$(echo $LINE | awk '{print $1}');
 samples=$(echo $LINE | awk 'OFS=" " {for (i=2; i<=NF; i++) print $i}');
-  echo $dir #&& mkdir -p ${dir} && echo $samples | tr '\t' '\n' > ${dir}/samples.txt
+  echo $dir && mkdir -p ${dir} && echo $samples | tr '\t' '\n' > ${dir}/samples.txt
 ## prep fastq dump script
-  echo -e '#!/usr/bin/env bash \n' > fq_cmd.sh && \
-  echo -e "prefetch --force all --max-size 10t -O ${dir} ${samples} && " | tr '\n' ' ' >> fq_cmd.sh && \
+  echo -e '#!/usr/bin/env bash \n' > ${dir}/fq_cmd.sh && \
+  echo -e "prefetch --force all --max-size 10t -O ${dir} ${samples} && " | tr '\n' ' ' >> ${dir}/fq_cmd.sh && \
   echo -e "cd ${dir} && vdb-validate ${samples} &&
-  fasterq-dump -m 10000MB -b 100MB -c 1000MB --temp $TMPDIR -e $THREADS -p --split-files --include-technical -O . ${samples}" | tr '\n' ' ' >> fq_cmd.sh && \
-  echo -e '\n' >> fq_cmd.sh && \
-  chmod 777 fq_cmd.sh && \
-  $SLURM -t $THREADS -m 2G fq_cmd.sh
+  fasterq-dump -m 10000MB -b 100MB -c 1000MB --temp $TMPDIR -e $THREADS -p --split-files --include-technical -O . ${samples}" | tr '\n' ' ' >> ${dir}/fq_cmd.sh && \
+  echo -e '\n' >> ${dir}/fq_cmd.sh && \
+  chmod 777 ${dir}/fq_cmd.sh && \
+  $SLURM -t $THREADS -m 2G ${dir}/fq_cmd.sh
 done < samples.txt
 # echo -e "export HOME=$TMPDIR \n" >> fq_cmd.sh && \
 

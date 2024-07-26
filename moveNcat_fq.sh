@@ -12,7 +12,7 @@ regex=$2
 for name in $(ls $indir | grep $regex | grep _R1 | sed 's/_[A-Z0-9_]*_S[0-9]*_L[0-9]*//' \
 | sed s/_R1_001.fastq.gz// | sort | uniq)
 do 
-echo $indir/${name}_*_R1_001.fastq.gz $name >> rename.txt;
 cat $indir/${name}_*_R1_001.fastq.gz > ${name}_R1.fastq.gz && \
-cat $indir/${name}_*_R2_001.fastq.gz > ${name}_R2.fastq.gz &
+cat $indir/${name}_*_R2_001.fastq.gz > ${name}_R2.fastq.gz && \
+echo $indir/${name}_*_R1_001.fastq.gz $name "Done" >> rename.txt &
 done
